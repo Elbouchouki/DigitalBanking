@@ -2,7 +2,7 @@
 
 ### Architecture du projet
 
-![Architecture](docs/architecture.png)
+![Architecture](docs/Architecture.png)
 
 ### Diagramme de classe
 
