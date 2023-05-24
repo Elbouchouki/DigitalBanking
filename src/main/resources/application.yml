@@ -1,0 +1,19 @@
+server:
+  port: 50000
+
+spring:
+  application:
+    name: digital-banking
+  datasource:
+    url: jdbc:mysql://localhost:3306/digitalbanking-db?useSSL=true&createDatabaseIfNotExist=true
+    username: root
+    password: elbouchouki
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: false
