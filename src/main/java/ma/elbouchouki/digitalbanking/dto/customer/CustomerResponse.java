@@ -1,9 +1,8 @@
 package ma.elbouchouki.digitalbanking.dto.customer;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
-import ma.elbouchouki.digitalbanking.dto.bankaccount.BankAcoountResponse;
+import ma.elbouchouki.digitalbanking.dto.bankaccount.BankAccountResponse;
 
 import java.util.Set;
 
@@ -21,5 +20,5 @@ public class CustomerResponse {
     private String phone;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
-    private Set<BankAcoountResponse> bankAccounts;
+    private Set<BankAccountResponse> bankAccounts;
 }

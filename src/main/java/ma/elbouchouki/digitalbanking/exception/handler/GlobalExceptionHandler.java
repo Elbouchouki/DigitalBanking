@@ -57,16 +57,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     @ExceptionHandler(InsufficientBalanceException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
     public ResponseEntity<ExceptionResponse> handleInsufficientBalanceException(InsufficientBalanceException e) {
         return ResponseEntity
                 .status(HttpStatus.NOT_ACCEPTABLE)
                 .body(
                         ExceptionResponse.builder()
-                                .code(HttpStatus.CONFLICT.value())
-                                .status(HttpStatus.CONFLICT.name())
+                                .code(HttpStatus.NOT_ACCEPTABLE.value())
+                                .status(HttpStatus.NOT_ACCEPTABLE.name())
                                 .message(getMessage(
-                                        CoreConstants.BusinessExceptionMessage.INTERNAL_ERROR,
+                                        CoreConstants.BusinessExceptionMessage.INSUFFICIENT_BALANCE,
                                         null))
                                 .build()
                 );

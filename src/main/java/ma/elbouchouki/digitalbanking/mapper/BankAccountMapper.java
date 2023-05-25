@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Set;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
@@ -69,37 +70,25 @@ public interface BankAccountMapper {
         return bankAccountResponse;
     }
 
-//    @BeanMapping(builder = @Builder(disableBuilder = true))
-//    @SubclassMapping(source = CurrentAccount.class, target = BankAccountResponse.class)
-//    CurrentAccount toCurrentAccount(BankAccountCreateRequest request);
-//
-//    @Mapping(
-//            target = "interestRate",
-//            expression = "java( new java.math.BigDecimal(String.valueOf(savingAccount.getInterestRate())))"
-//    )
-//    BankAccountResponse toSavingAccountResponse(SavingAccount savingAccount);
-//
-//    @Mapping(
-//            target = "overDraft",
-//            expression = "java( new java.math.BigDecimal(String.valueOf(currentAccount.getOverDraft())))"
-//    )
-//    BankAccountResponse toCurrentAccountResponse(CurrentAccount currentAccount);
-
     List<BankAccountResponse> toBankAccountResponseList(List<BankAccount> bankAccountList);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(
-            target = "overDraft",
-            expression = "java(request.overDraft().doubleValue())"
-    )
-    void updateCurrentAccount(BankAccountUpdateRequest request, @MappingTarget CurrentAccount currentAccount);
+    Set<BankAccountResponse> toBankAccountResponseSet(Set<BankAccount> bankAccountList);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(
-            target = "interestRate",
-            expression = "java(request.interestRate().doubleValue())"
-    )
-    void updateSavingAccount(BankAccountUpdateRequest request, @MappingTarget SavingAccount savingAccount);
+    default void fromUpdate(BankAccountUpdateRequest bankAccountUpdateRequest, @MappingTarget BankAccount bankAccount) {
+        if (bankAccountUpdateRequest == null) {
+            return;
+        }
+
+        if (bankAccount instanceof SavingAccount)
+            if (bankAccountUpdateRequest.interestRate() != null)
+                ((SavingAccount) bankAccount).setInterestRate(bankAccountUpdateRequest.interestRate().doubleValue());
+            else if (bankAccountUpdateRequest.overDraft() != null)
+                ((CurrentAccount) bankAccount).setOverDraft(bankAccountUpdateRequest.overDraft().doubleValue());
+        if (bankAccountUpdateRequest.currency() != null)
+            bankAccount.setCurrency(bankAccountUpdateRequest.currency());
+        if (bankAccountUpdateRequest.status() != null)
+            bankAccount.setStatus(bankAccountUpdateRequest.status());
+    }
 
     @Mapping(target = "page", expression = "java(bankAccountPage.getNumber())")
     @Mapping(target = "size", expression = "java(bankAccountPage.getSize())")

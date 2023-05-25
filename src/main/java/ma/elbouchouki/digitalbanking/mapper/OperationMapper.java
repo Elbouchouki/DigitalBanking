@@ -3,12 +3,12 @@ package ma.elbouchouki.digitalbanking.mapper;
 import ma.elbouchouki.digitalbanking.dto.PagingResponse;
 import ma.elbouchouki.digitalbanking.dto.operation.OperationCreateRequest;
 import ma.elbouchouki.digitalbanking.dto.operation.OperationResponse;
-import ma.elbouchouki.digitalbanking.dto.operation.OperationUpdateRequest;
 import ma.elbouchouki.digitalbanking.model.Operation;
 import org.mapstruct.*;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Set;
 
 @Mapper(
         componentModel = MappingConstants.ComponentModel.SPRING,
@@ -26,8 +26,7 @@ public interface OperationMapper {
 
     List<OperationResponse> toOperationResponseList(List<Operation> operationList);
 
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    void updateOperationFromDTO(OperationUpdateRequest request, @MappingTarget Operation operation);
+    Set<OperationResponse> toOperationResponseSet(Set<Operation> operationList);
 
     @Mapping(target = "page", expression = "java(operationPage.getNumber())")
     @Mapping(target = "size", expression = "java(operationPage.getSize())")

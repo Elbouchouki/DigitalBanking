@@ -1,21 +1,24 @@
 package ma.elbouchouki.digitalbanking.service;
 
 import ma.elbouchouki.digitalbanking.dto.PagingResponse;
-import ma.elbouchouki.digitalbanking.dto.customer.CustomerCreateRequest;
-import ma.elbouchouki.digitalbanking.dto.customer.CustomerResponse;
-import ma.elbouchouki.digitalbanking.dto.customer.CustomerUpdateRequest;
+import ma.elbouchouki.digitalbanking.dto.bankaccount.BankAccountCreateRequest;
+import ma.elbouchouki.digitalbanking.dto.bankaccount.BankAccountResponse;
+import ma.elbouchouki.digitalbanking.dto.bankaccount.BankAccountUpdateRequest;
 import ma.elbouchouki.digitalbanking.exception.ElementAlreadyExistsException;
 import ma.elbouchouki.digitalbanking.exception.ElementNotFoundException;
 
-public interface CustomerService {
-    CustomerResponse save(CustomerCreateRequest request) throws ElementAlreadyExistsException;
+import java.util.Set;
 
-    CustomerResponse findById(String id) throws ElementNotFoundException;
+public interface BankAccountService {
+    BankAccountResponse save(BankAccountCreateRequest request) throws ElementAlreadyExistsException;
 
-    PagingResponse<CustomerResponse> findAll(int page, int size, String search);
+    BankAccountResponse findById(String id, boolean includeOperations) throws ElementNotFoundException;
 
-    CustomerResponse update(String id, CustomerUpdateRequest request) throws ElementNotFoundException;
+    PagingResponse<BankAccountResponse> findAll(int page, int size, boolean includeOperations);
+
+    Set<BankAccountResponse> findAllByCustomerId(String customerId, boolean includeOperations);
+
+    BankAccountResponse update(String id, BankAccountUpdateRequest request) throws ElementNotFoundException;
 
     void deleteById(String id) throws ElementNotFoundException;
-
 }

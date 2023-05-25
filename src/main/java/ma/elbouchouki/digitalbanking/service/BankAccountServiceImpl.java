@@ -4,38 +4,54 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import ma.elbouchouki.digitalbanking.constant.CoreConstants;
 import ma.elbouchouki.digitalbanking.dto.PagingResponse;
-import ma.elbouchouki.digitalbanking.dto.customer.CustomerCreateRequest;
-import ma.elbouchouki.digitalbanking.dto.customer.CustomerResponse;
-import ma.elbouchouki.digitalbanking.dto.customer.CustomerUpdateRequest;
+import ma.elbouchouki.digitalbanking.dto.bankaccount.BankAccountCreateRequest;
+import ma.elbouchouki.digitalbanking.dto.bankaccount.BankAccountResponse;
+import ma.elbouchouki.digitalbanking.dto.bankaccount.BankAccountUpdateRequest;
 import ma.elbouchouki.digitalbanking.exception.ElementAlreadyExistsException;
 import ma.elbouchouki.digitalbanking.exception.ElementNotFoundException;
-import ma.elbouchouki.digitalbanking.mapper.CustomerMapper;
+import ma.elbouchouki.digitalbanking.mapper.BankAccountMapper;
+import ma.elbouchouki.digitalbanking.model.BankAccount;
 import ma.elbouchouki.digitalbanking.model.Customer;
+import ma.elbouchouki.digitalbanking.repository.BankAccountRepository;
 import ma.elbouchouki.digitalbanking.repository.CustomerRepository;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @AllArgsConstructor
 @Slf4j
-public class CustomerServiceImpl implements CustomerService {
-    private final String ELEMENT_TYPE = "Customer";
+public class BankAccountServiceImpl implements BankAccountService {
+    private final String ELEMENT_TYPE = "BankAccount";
     private final String ID_FIELD_NAME = "id";
-    private final CustomerMapper mapper;
-    private final CustomerRepository repository;
+    private final BankAccountMapper mapper;
+    private final BankAccountRepository repository;
+    private final CustomerRepository customerRepository;
+    private final OperationService operationService;
 
     @Override
-    public CustomerResponse save(final CustomerCreateRequest request) throws ElementAlreadyExistsException {
-        return mapper.toCustomerResponse(
-                repository.save(
-                        mapper.toCustomer(request)
-                )
+    public BankAccountResponse save(final BankAccountCreateRequest request) throws ElementAlreadyExistsException {
+        Customer customer = customerRepository.findById(request.customerId())
+                .orElseThrow(() ->
+                        new ElementNotFoundException(
+                                CoreConstants.BusinessExceptionMessage.NOT_FOUND,
+                                new Object[]{"Customer", "id", request.customerId()},
+                                null
+                        ));
+
+        BankAccount bankAccount = mapper.toBankAccount(request);
+        bankAccount.setCustomer(customer);
+
+
+        return mapper.toBankAccountResponse(
+                repository.save(bankAccount)
         );
     }
 
     @Override
-    public CustomerResponse findById(String id) throws ElementNotFoundException {
-        return mapper.toCustomerResponse(
+    public BankAccountResponse findById(String id, boolean includeOperations) throws ElementNotFoundException {
+        BankAccountResponse bankAccountResponse = mapper.toBankAccountResponse(
                 repository.findById(id)
                         .orElseThrow(() ->
                                 new ElementNotFoundException(
@@ -44,20 +60,55 @@ public class CustomerServiceImpl implements CustomerService {
                                         null
                                 ))
         );
+
+        if (includeOperations) {
+            bankAccountResponse.setOperations(
+                    operationService.findAllByBankAccountId(id)
+            );
+        }
+
+        return bankAccountResponse;
     }
 
     @Override
-    public PagingResponse<CustomerResponse> findAll(int page, int size, String search) {
-        return mapper.toPagingResponse(
+    public PagingResponse<BankAccountResponse> findAll(int page, int size, boolean includeOperations) {
+        PagingResponse<BankAccountResponse> response = mapper.toPagingResponse(
                 repository.findAll(
                         PageRequest.of(page, size)
                 )
         );
+
+        if (includeOperations) {
+            response.records().forEach(
+                    bankAccountResponse -> bankAccountResponse.setOperations(
+                            operationService.findAllByBankAccountId(bankAccountResponse.getId())
+                    )
+            );
+        }
+
+        return response;
     }
 
     @Override
-    public CustomerResponse update(String id, CustomerUpdateRequest customerUpdateRequest) throws ElementNotFoundException {
-        final Customer customer = repository.findById(id)
+    public Set<BankAccountResponse> findAllByCustomerId(String customerId, boolean includeOperations) {
+        Set<BankAccountResponse> bankAccountResponses = mapper.toBankAccountResponseSet(
+                repository.findAllByCustomerId(customerId)
+        );
+
+        if (includeOperations) {
+            bankAccountResponses.forEach(
+                    bankAccountResponse -> bankAccountResponse.setOperations(
+                            operationService.findAllByBankAccountId(bankAccountResponse.getId())
+                    )
+            );
+        }
+
+        return bankAccountResponses;
+    }
+
+    @Override
+    public BankAccountResponse update(String id, BankAccountUpdateRequest bankAccountUpdateRequest) throws ElementNotFoundException {
+        final BankAccount bankAccount = repository.findById(id)
                 .orElseThrow(() ->
                         new ElementNotFoundException(
                                 CoreConstants.BusinessExceptionMessage.NOT_FOUND,
@@ -65,10 +116,10 @@ public class CustomerServiceImpl implements CustomerService {
                                 null
                         ));
 
-        mapper.updateCustomerFromDTO(customerUpdateRequest, customer);
+        mapper.fromUpdate(bankAccountUpdateRequest, bankAccount);
 
-        return mapper.toCustomerResponse(
-                repository.save(customer)
+        return mapper.toBankAccountResponse(
+                repository.save(bankAccount)
         );
     }
 
