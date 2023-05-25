@@ -14,7 +14,7 @@ import java.util.Set;
 @Setter
 @Getter
 @Data
-public class BankAcoountResponse {
+public class BankAccountResponse {
     private String id;
     private String currency;
     private AccountStatus status;

@@ -27,5 +27,8 @@ public class Operation {
     private double amount;
     @Enumerated(EnumType.STRING)
     private OperationType type;
+    @ManyToOne
+    @JoinColumn(name = "bank_account_id", nullable = false)
+    private BankAccount bankAccount;
 
 }

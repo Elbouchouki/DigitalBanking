@@ -6,11 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
+
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Data
 public class Customer {
     @Id
@@ -33,5 +36,7 @@ public class Customer {
     @Column(nullable = false, length = 15)
     private String phone;
 
+    @OneToMany(mappedBy = "customer")
+    private Set<BankAccount> bankAccounts;
 
 }

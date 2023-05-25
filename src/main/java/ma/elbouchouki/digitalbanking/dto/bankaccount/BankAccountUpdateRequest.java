@@ -7,7 +7,7 @@ import ma.elbouchouki.digitalbanking.enums.AccountStatus;
 import java.math.BigDecimal;
 
 @Builder
-public record BankAcoountUpdateRequest(
+public record BankAccountUpdateRequest(
         String currency,
         AccountStatus status,
         @DecimalMin("0") BigDecimal interestRate,

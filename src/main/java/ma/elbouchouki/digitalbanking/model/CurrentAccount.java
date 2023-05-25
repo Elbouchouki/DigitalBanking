@@ -4,15 +4,15 @@ import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@EqualsAndHashCode(callSuper = true)
+@SuperBuilder
 @Data
 @DiscriminatorValue("CURRENT")
 public class CurrentAccount extends BankAccount {
-    @Column(nullable = false)
     private double overDraft;
 }

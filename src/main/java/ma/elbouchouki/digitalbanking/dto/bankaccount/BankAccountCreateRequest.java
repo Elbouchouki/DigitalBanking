@@ -9,7 +9,7 @@ import ma.elbouchouki.digitalbanking.enums.AccountStatus;
 import java.math.BigDecimal;
 
 @Builder
-public record BankAcoountCreateRequest(
+public record BankAccountCreateRequest(
         @NotNull String currency,
         @NotNull AccountStatus status,
         @DecimalMin("0") BigDecimal interestRate,
