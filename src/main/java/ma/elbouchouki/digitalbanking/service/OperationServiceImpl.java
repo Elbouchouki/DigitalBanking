@@ -86,6 +86,14 @@ public class OperationServiceImpl implements OperationService {
 
     @Override
     public Set<OperationResponse> findAllByBankAccountId(String bankAccountId) {
+        bankAccountRepository.findById(bankAccountId)
+                .orElseThrow(() ->
+                        new ElementNotFoundException(
+                                CoreConstants.BusinessExceptionMessage.NOT_FOUND,
+                                new Object[]{"BankAccount", "id", bankAccountId},
+                                null
+                        ));
+
         return mapper.toOperationResponseSet(
                 repository.findAllByBankAccountId(
                         bankAccountId

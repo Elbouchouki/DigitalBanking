@@ -91,6 +91,14 @@ public class BankAccountServiceImpl implements BankAccountService {
 
     @Override
     public Set<BankAccountResponse> findAllByCustomerId(String customerId, boolean includeOperations) {
+        customerRepository.findById(customerId)
+                .orElseThrow(() ->
+                        new ElementNotFoundException(
+                                CoreConstants.BusinessExceptionMessage.NOT_FOUND,
+                                new Object[]{"Customer", "id", customerId},
+                                null
+                        ));
+
         Set<BankAccountResponse> bankAccountResponses = mapper.toBankAccountResponseSet(
                 repository.findAllByCustomerId(customerId)
         );
