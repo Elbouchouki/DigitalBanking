@@ -8,8 +8,12 @@ import ma.elbouchouki.digitalbanking.model.*;
 import ma.elbouchouki.digitalbanking.repository.BankAccountRepository;
 import ma.elbouchouki.digitalbanking.repository.CustomerRepository;
 import ma.elbouchouki.digitalbanking.repository.OperationRepository;
+import ma.elbouchouki.digitalbanking.security.entities.AppRole;
+import ma.elbouchouki.digitalbanking.security.entities.AppUser;
+import ma.elbouchouki.digitalbanking.security.service.SecurityService;
 import net.datafaker.Faker;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -25,7 +29,11 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final CustomerRepository customerRepository;
     private final BankAccountRepository bankAccountRepository;
     private final OperationRepository operationRepository;
+
+    private final SecurityService securityService;
     private final Faker faker = new Faker();
+
+    PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) throws Exception {
@@ -88,5 +96,29 @@ public class DatabaseSeeder implements CommandLineRunner {
         operationRepository.saveAll(operations);
         log.info("Operations saved successfully.");
 
+        AppRole adminRole = AppRole.builder()
+                .roleName("ADMIN")
+                .build();
+        AppRole userRole = AppRole.builder()
+                .roleName("USER")
+                .build();
+        securityService.addNewRole(adminRole);
+        securityService.addNewRole(userRole);
+
+        securityService.addNewUser(
+                AppUser.builder()
+                        .username("admin")
+                        .roles(List.of(adminRole))
+                        .password("admin")
+                        .build()
+        );
+        securityService.addNewUser(
+                AppUser.builder()
+                        .username("user")
+                        .roles(List.of(userRole))
+                        .password("user")
+                        .build()
+        );
+        log.info("Users saved successfully.");
     }
 }
