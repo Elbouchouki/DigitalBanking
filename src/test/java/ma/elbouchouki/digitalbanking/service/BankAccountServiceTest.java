@@ -2,7 +2,6 @@ package ma.elbouchouki.digitalbanking.service;
 
 import ma.elbouchouki.digitalbanking.dto.bankaccount.BankAccountCreateRequest;
 import ma.elbouchouki.digitalbanking.dto.bankaccount.BankAccountUpdateRequest;
-import ma.elbouchouki.digitalbanking.enums.AccountStatus;
 import ma.elbouchouki.digitalbanking.mapper.BankAccountMapper;
 import ma.elbouchouki.digitalbanking.mapper.OperationMapper;
 import ma.elbouchouki.digitalbanking.model.BankAccount;
@@ -24,11 +23,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
